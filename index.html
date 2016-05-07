@@ -67,9 +67,9 @@
                 <div class="color-container-center align-center uppercase active-score">
                         {{#if game.rules.runAndGun}}<span class="active-score-timer btn-new-transparent-gold" ng-show="isRunAndGun">{{ timer }}</span>{{/if}}
                         <span class="btn-new-transparent-navy active-score-current-big">{{ currentPlayer.score }}</span>
-                        <!--<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && !awaitApproach && !buttonDisabled" translate="message.gameThrow"></span>
-                        <span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && awaitApproach && buttonDisabled" translate="message.gameCollect"></span>
-                        <span class="active-score-message btn-new-transparent-gold uppercase" ng-if="forceWait || (awaitApproach && !buttonDisabled)" translate="message.gameWait"></span>-->
+                        {{#throw forceWait awaitApproach buttonDisabled}}<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && !awaitApproach && !buttonDisabled" translate="message.gameThrow">THROW</span>{{/throw}}
+                        {{#pull forceWait awaitApproach buttonDisabled}}<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && awaitApproach && buttonDisabled" translate="message.gameCollect"></span>{{/pull}}
+                        {{#wait forceWait awaitApproach buttonDisabled}}<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="forceWait || (awaitApproach && !buttonDisabled)" translate="message.gameWait"></span>{{/wait}}
                 </div>
             </div>
             <div class="float-left container-20">
@@ -97,6 +97,7 @@
                 </div>
             </div>
         </div>
+
     </ion-content>
     </ion-view>
   </script>

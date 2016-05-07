@@ -32,6 +32,20 @@ $(document).ready(function() {
 
   });
 
+  Handlebars.registerHelper('if_all', function() {
+    var args = [].slice.apply(arguments);
+    var opts = args.pop();
+
+    var fn = opts.fn;
+    for(var i = 0; i < args.length; ++i) {
+        if(args[i])
+            continue;
+        fn = opts.inverse;
+        break;
+    }
+    return fn(this);
+  });
+
   Handlebars.registerHelper("math", function(lvalue, operator, rvalue, options) {
       lvalue = parseFloat(lvalue);
       rvalue = parseFloat(rvalue);
@@ -43,6 +57,30 @@ $(document).ready(function() {
           "/": lvalue / rvalue,
           "%": lvalue % rvalue
       }[operator];
+  });
+
+  Handlebars.registerHelper("throw", function(value1, value2, value3, options) {
+      if(!value1 && !value2 && !value3) {
+          return options.fn(this);
+      } else {
+          return options.inverse(this);
+      }
+  });
+
+  Handlebars.registerHelper("pull", function(value1, value2, value3, options) {
+      if(!value1 && value2 && value3) {
+          return options.fn(this);
+      } else {
+          return options.inverse(this);
+      }
+  });
+
+  Handlebars.registerHelper("wait", function(value1, value2, value3, options) {
+      if(value1 || (value2 && !value3)) {
+          return options.fn(this);
+      } else {
+          return options.inverse(this);
+      }
   });
 
   var template = Handlebars.compile(source);
@@ -129,8 +167,6 @@ $(document).ready(function() {
   dart2: '',
   dart3: ''
 };
-
-console.log(data.title);
 
   $("#content").html(template(data));
 });
