@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta name="format-detection" content="telephone=no"> <!--disable number auto links-->
+    <!--<meta http-equiv="Content-Security-Policy">-->
+    <title></title>
+
+    <!-- custom fonts -->
+     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+
+    <!-- compiled css output -->
+    <link href="css/ionic.app.css" rel="stylesheet">
+
+    <link href="css/font-awesome.min.css" rel="stylesheet" >
+    <link href="css/flexboxgrid.min.css" rel="stylesheet" >
+
+    <script type="text/javascript" src="js/jquery.js" /></script>
+    <script type="text/javascript" src="js/handlebars.js" /></script>
+    <script type="text/javascript" src="js/main.js" /></script>
+</head>
+<body ng-app="pikanje" class="container-screen">
+  <script id="pikado-scoreboard" type="text/x-handlebars-template">
+    <ion-view hide-nav-bar="true">
+        <ion-content class="container-background" scroll="false">
+
+            <div class="color-container-header button-header">
+                <div class="align-center">
+                    <div class="container-50 float-left">
+                        <span class="btn-color btn-new-transparent-gold align-left">{{getTitle}}</span>
+                    </div>
+                </div>
+            </div>
+
+        <div class="game-content-container" ng-if="isX01">
+            <div class="float-left container-25">
+                <div class="color-container-center align-center uppercase">
+                    <div class="round-and-darts">
+                      <div class="round-and-darts">
+                          {{#if game.rules.runAndGun}}
+                          <div class="btn-new-navy current-round">
+                              R -
+                          </div>
+                          {{else}}
+                          <div class="btn-new-navy current-round">
+                              R {{ currentRound }}/{{ game.rules.rounds }}
+                          </div>
+                          {{/if}}
+                      </div>
+                      <div class="current-darts">
+                          <div class="btn-new-gold float-left video-hide container-center" ng-click="toggleVideo()">
+                              <img ng-show="!videoShown" src="img/arrow-right-white.svg" />
+                          </div>
+                          <div class="float-left available-darts align-center btn-new-transparent-navy">
+                              <span ng-if="isOnline" class="average-statistic">{{ avgStatisticName }}: {{ currentPlayer.avgStatisticValue }}</span>
+                              {{#compare currentPlayer.dartsRemaining 1 operator=">="}}<span ng-show="!isPlayOff"><img src="img/dart.svg" />{{ dart3 }}</span>{{/compare}}
+                              {{#compare currentPlayer.dartsRemaining 2 operator=">="}}<span ng-show="!isPlayOff"><img src="img/dart.svg" ng-show="currentPlayer.dartsRemaining >= 2" />{{ dart2 }}</span>{{/compare}}
+                              {{#compare currentPlayer.dartsRemaining 3 operator="=="}}<span><img src="img/dart.svg" ng-show="currentPlayer.dartsRemaining === 3" />{{ dart1 }}</span>{{/compare}}
+                          </div>
+                      </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="float-left container-55">
+                <div class="color-container-center align-center uppercase active-score">
+                        {{#if game.rules.runAndGun}}<span class="active-score-timer btn-new-transparent-gold" ng-show="isRunAndGun">{{ timer }}</span>{{/if}}
+                        <span class="btn-new-transparent-navy active-score-current-big">{{ currentPlayer.score }}</span>
+                        <!--<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && !awaitApproach && !buttonDisabled" translate="message.gameThrow"></span>
+                        <span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && awaitApproach && buttonDisabled" translate="message.gameCollect"></span>
+                        <span class="active-score-message btn-new-transparent-gold uppercase" ng-if="forceWait || (awaitApproach && !buttonDisabled)" translate="message.gameWait"></span>-->
+                </div>
+            </div>
+            <div class="float-left container-20">
+                <div class="color-container-center align-center uppercase previous-score">
+                    <span class="btn-new-transparent-navy previous-score-current">{{ currentRoundScore }}</span>
+                    <span class="btn-new-transparent-navy previous-score-round">
+                        {{ currentPlayer.math currentPlayer.roundScores.length "-" 1.roundScores }}
+                        <span class="btn-new-transparent-gold">
+                            R{{ math currentPlayer.roundScores.length  "-" 1 }}
+                        </span>
+                    </span>
+
+                    {{#compare currentPlayer.roundScores.length 2 operator=">="}}<span ng-if="currentPlayer.roundScores.length >= 2" class="btn-new-transparent-navy previous-score-round">
+                        {{ currentPlayer.math currentPlayer.roundScores.length "-" 2.roundScores }}
+                        <span class="btn-new-transparent-gold">
+                            R{{ currentPlayer.roundScores.length - 2 }}
+                        </span>
+                    </span>{{/compare}}
+                    {{#compare currentPlayer.roundScores.length 3 operator=">="}}<span ng-if="currentPlayer.roundScores.length >= 3" class="btn-new-transparent-navy previous-score-round">
+                        {{ currentPlayer.math currentPlayer.roundScores.length "-" 3.roundScores }}
+                        <span class="btn-new-transparent-gold">
+                            R{{ currentPlayer.roundScores.length - 3 }}
+                        </span>
+                    </span>{{/compare}}
+                </div>
+            </div>
+        </div>
+    </ion-content>
+    </ion-view>
+  </script>
+
+  <div id="content">
+
+  </div>
+</body>
+</html>
