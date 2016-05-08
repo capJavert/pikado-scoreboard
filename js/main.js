@@ -5,11 +5,14 @@ $(document).ready(function() {
   var source   = $("#pikado-scoreboard").html();
 
   Handlebars.registerHelper('index_of', function(context,ndx,offset) {
-    if(!isNaN(offset)) {
-      ndx-=offset;
-    }
-
-    return context[ndx];
+	if(typeof offset != "undefined" && !isNaN(offset)) {
+    	 	ndx-=offset;
+   	}
+    
+	if(typeof context === "undefined" || isNaN(ndx)){
+		return "";
+	}
+    	return context[ndx];
   });
 
   Handlebars.registerHelper('container_width', function(length) {
