@@ -260,15 +260,23 @@ var timeInterval = null;
       console.log("endGame");
 
       for(var i=0;i<data.players.length;i++) {
+//.replace("-new","")
         data.players[i].color = playerColors[i];
       }
 
       data.endGame = true;
-
+	data.waiting = false;
       $("#content").html(template(data));
   });
 
+  socket.on('gameMonitor:waitGame', function(data){
+	timer = 0;
+	console.log("WaitGame", data);
+	$("#content").html(template(data));
+  });
+
   data.playerColors = playerColors;
+data.waiting = true;
 
   $("#content").html(template(data));
 });
