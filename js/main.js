@@ -4,7 +4,11 @@ $(document).ready(function() {
 
   var source   = $("#pikado-scoreboard").html();
 
-  Handlebars.registerHelper('index_of', function(context,ndx) {
+  Handlebars.registerHelper('index_of', function(context,ndx,offset) {
+    if(!isNaN(offset)) {
+      ndx-=offset;
+    }
+
     return context[ndx];
   });
 
@@ -108,7 +112,7 @@ $(document).ready(function() {
 
   var template = Handlebars.compile(source);
   var data = {
-    "getTitle": "Naslov"
+    "getTitle": "PIKADO"
   }
 
   /*var data = { game:
@@ -220,6 +224,8 @@ $(document).ready(function() {
       console.log("endGame");
           //$("#content").html(template(data));
   });
+
+  data.playerColors = playerColors;
 
   $("#content").html(template(data));
 });
