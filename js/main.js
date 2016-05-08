@@ -4,14 +4,23 @@ $(document).ready(function() {
 
   var source   = $("#pikado-scoreboard").html();
 
+  Handlebars.registerHelper('color', function(ndx) {
+    	if(typeof context === "undefined" || isNaN(ndx)){
+    		return "";
+    	}
+
+    	return playerColors[ndx];
+  });
+
   Handlebars.registerHelper('index_of', function(context,ndx,offset) {
-	if(typeof offset != "undefined" && !isNaN(offset)) {
-    	 	ndx-=offset;
-   	}
-    
-	if(typeof context === "undefined" || isNaN(ndx)){
-		return "";
-	}
+    	if(typeof offset != "undefined" && !isNaN(offset)) {
+        	 	ndx-=offset;
+       	}
+
+    	if(typeof context === "undefined" || isNaN(ndx)){
+    		return "";
+    	}
+
     	return context[ndx];
   });
 
@@ -118,7 +127,8 @@ $(document).ready(function() {
     "getTitle": "PIKADO"
   }
 
-  /*var data = { game:
+/* TEST DATA
+  var data = { game:
    { numberOfPlayers: 2,
      players: [ [Object], [Object] ],
      rules:
@@ -173,6 +183,7 @@ $(document).ready(function() {
        numbersToHit: [],
        id: '0',
        totalScore: 0,
+       color: 'btn-new-green',
        avgStatistic: 0 },
      { name: 'ante',
        displayName: 'ante',
@@ -195,7 +206,7 @@ $(document).ready(function() {
   avgStatisticName: 'PPD',
   dart1: 'S2',
   dart2: '',
-  dart3: ''
+  dart3: '',
 };*/
 
   var playerColors = ["btn-new-green", "btn-new-teal", "btn-new-navy", "btn-new-purple", "btn-new-yellow", "btn-new-pink", "btn-new-cyan", "btn-new-blue", "btn-new-transparent-grey"];
@@ -221,11 +232,20 @@ $(document).ready(function() {
 
   socket.on('gameMonitor:dartStuck', function(data){
       console.log("dartStuck");
+
+      alert("Dart Stuck!");
       //$("#content").html(template(data));
   });
   socket.on('gameMonitor:endGame', function(data){
       console.log("endGame");
-          //$("#content").html(template(data));
+
+      for(var i=0;i<data.players.length;i++) {
+        data.players[i].color = playerColors[i];
+      }
+
+      data.endGame = true;
+
+      $("#content").html(template(data));
   });
 
   data.playerColors = playerColors;
