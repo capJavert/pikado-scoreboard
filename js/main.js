@@ -1,5 +1,27 @@
 $(document).ready(function() {
+  //connect to socket
+  var socket = io.connect('http://localhost:3000');
+
   var source   = $("#pikado-scoreboard").html();
+
+  Handlebars.registerHelper('index_of', function(context,ndx) {
+    return context[ndx];
+  });
+
+  Handlebars.registerHelper('container_width', function(length) {
+    if(length === 4 || length === 7 || length === 8) {
+      return 'container-25'
+    }
+    if(length === 3 || length === 6 || length === 5) {
+      return 'container-33'
+    }
+    if(length === 2) {
+      return 'container-50'
+    }
+    if(length === 1) {
+      return 'container-100'
+    }
+  });
 
   Handlebars.registerHelper('compare', function(lvalue, rvalue, options) {
 
@@ -11,6 +33,7 @@ $(document).ready(function() {
       var operators = {
           '==':       function(l,r) { return l == r; },
           '===':      function(l,r) { return l === r; },
+          '!==':       function(l,r) { return l !== r; },
           '!=':       function(l,r) { return l != r; },
           '<':        function(l,r) { return l < r; },
           '>':        function(l,r) { return l > r; },
@@ -88,7 +111,7 @@ $(document).ready(function() {
     "getTitle": "Naslov"
   }
 
-  var data = { game:
+  /*var data = { game:
    { numberOfPlayers: 2,
      players: [ [Object], [Object] ],
      rules:
@@ -158,15 +181,45 @@ $(document).ready(function() {
    { name: 'Host',
      score: 296,
      id: '0',
-     dartsRemaining: 3,
+     dartsRemaining: 2,
      roundScores: [ 301 ] },
   currentRound: 1,
   currentRoundScore: 5,
   avgStatisticName: 'PPD',
-  dart1: '',
+  dart1: 'S2',
   dart2: '',
   dart3: ''
-};
+};*/
+
+  var playerColors = ["btn-new-green", "btn-new-teal", "btn-new-navy", "btn-new-purple", "btn-new-yellow", "btn-new-pink", "btn-new-cyan", "btn-new-blue", "btn-new-transparent-grey"];
+
+  socket.on('connect', function(){
+      console.log('qqCLIENT_MONITOR');
+  });
+  console.log("prijeINITOSLUSKIVACA");
+
+  socket.on('gameMonitor:init', function(data){
+      console.log("initCLIENT");
+
+      data.playerColors = playerColors;
+      $("#content").html(template(data));
+  });
+
+  socket.on('gameMonitor:displayScore', function(data){
+      console.log("displayScoreCLIENT");
+
+      data.playerColors = playerColors;
+      $("#content").html(template(data));
+  });
+
+  socket.on('gameMonitor:dartStuck', function(data){
+      console.log("dartStuck");
+      //$("#content").html(template(data));
+  });
+  socket.on('gameMonitor:endGame', function(data){
+      console.log("endGame");
+          //$("#content").html(template(data));
+  });
 
   $("#content").html(template(data));
 });

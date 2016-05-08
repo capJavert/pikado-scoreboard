@@ -16,6 +16,7 @@
     <link href="css/font-awesome.min.css" rel="stylesheet" >
     <link href="css/flexboxgrid.min.css" rel="stylesheet" >
 
+    <script type="text/javascript" src="js/socket/socket.io.js" /></script>
     <script type="text/javascript" src="js/jquery.js" /></script>
     <script type="text/javascript" src="js/handlebars.js" /></script>
     <script type="text/javascript" src="js/main.js" /></script>
@@ -53,10 +54,10 @@
                               <img ng-show="!videoShown" src="img/arrow-right-white.svg" />
                           </div>
                           <div class="float-left available-darts align-center btn-new-transparent-navy">
-                              <span ng-if="isOnline" class="average-statistic">{{ avgStatisticName }}: {{ currentPlayer.avgStatisticValue }}</span>
-                              {{#compare currentPlayer.dartsRemaining 1 operator=">="}}<span ng-show="!isPlayOff"><img src="img/dart.svg" />{{ dart3 }}</span>{{/compare}}
-                              {{#compare currentPlayer.dartsRemaining 2 operator=">="}}<span ng-show="!isPlayOff"><img src="img/dart.svg" ng-show="currentPlayer.dartsRemaining >= 2" />{{ dart2 }}</span>{{/compare}}
-                              {{#compare currentPlayer.dartsRemaining 3 operator="=="}}<span><img src="img/dart.svg" ng-show="currentPlayer.dartsRemaining === 3" />{{ dart1 }}</span>{{/compare}}
+                              <span ng-if="isOnline" class="average-statistic">{{#if avgStatisticName }}{{currentPlayer.avgStatisticValue}}{{/if}}</span>
+                              {{#compare currentPlayer.dartsRemaining 1 operator=">="}}<span ng-show="!isPlayOff"><img src="img/dart.svg" /></span>{{/compare}}{{#if dart3}}<span>{{ dart3 }}</span>{{/if}}
+                              {{#compare currentPlayer.dartsRemaining 2 operator=">="}}<span ng-show="!isPlayOff"><img src="img/dart.svg" ng-show="currentPlayer.dartsRemaining >= 2" /></span>{{/compare}}<span>{{#if dart2}}{{ dart2 }}</span>{{/if}}
+                              {{#compare currentPlayer.dartsRemaining 3 operator="=="}}<span><img src="img/dart.svg" ng-show="currentPlayer.dartsRemaining === 3" /></span>{{/compare}}<span>{{#if dart1}}{{ dart1 }}</span>{{/if}}
                           </div>
                       </div>
                     </div>
@@ -68,8 +69,8 @@
                         {{#if game.rules.runAndGun}}<span class="active-score-timer btn-new-transparent-gold" ng-show="isRunAndGun">{{ timer }}</span>{{/if}}
                         <span class="btn-new-transparent-navy active-score-current-big">{{ currentPlayer.score }}</span>
                         {{#throw forceWait awaitApproach buttonDisabled}}<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && !awaitApproach && !buttonDisabled" translate="message.gameThrow">THROW</span>{{/throw}}
-                        {{#pull forceWait awaitApproach buttonDisabled}}<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && awaitApproach && buttonDisabled" translate="message.gameCollect"></span>{{/pull}}
-                        {{#wait forceWait awaitApproach buttonDisabled}}<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="forceWait || (awaitApproach && !buttonDisabled)" translate="message.gameWait"></span>{{/wait}}
+                        {{#pull forceWait awaitApproach buttonDisabled}}<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="!forceWait && awaitApproach && buttonDisabled" translate="message.gameCollect">PULL</span>{{/pull}}
+                        {{#wait forceWait awaitApproach buttonDisabled}}<span class="active-score-message btn-new-transparent-gold uppercase" ng-if="forceWait || (awaitApproach && !buttonDisabled)" translate="message.gameWait">WAIT</span>{{/wait}}
                 </div>
             </div>
             <div class="float-left container-20">
@@ -95,6 +96,50 @@
                         </span>
                     </span>{{/compare}}
                 </div>
+            </div>
+        </div>
+        <div class="game-footer">
+            <div class="color-container-footer game-players-container align-center">
+                <!-- PLAYER 1 BOX -->
+                {{#compare players.length 1 operator=">="}}
+                <div class="float-left {{#container_width players.length}}{{/container_width}}">
+                    {{#if isHalf}}
+                      <span ng-if="isHalf"
+                          class="split-scoreboard player-names {{#compare currentPlayer players.0.id operator="==="}}{{#index_of playerColors 8}}{{/index_of}}{{/compare}} {{#compare currentPlayer players.0.id operator="!=="}}{{#index_of playerColors 0}}{{/index_of}}{{/compare}}">
+                          <i class="fa"></i> {{ players.0.displayName }} ({{ players.0.avgStatistic }})
+
+                          <span class="{{#index_of playerColors 0}}{{/index_of}} split-scoreboard" ng-if="isHalf">
+                              {{ players.0.score }}<span ng-show="players.0.inPlayOff">({{ players.0.playOffScore }})</span>
+                          </span>
+                      </span>
+                    {{else}}
+                      <span class="player-names {{#compare currentPlayer players.0.id operator="==="}}{{#index_of playerColors 8}}{{/index_of}}{{/compare}} {{#compare currentPlayer players.0.id operator="!=="}}{{#index_of playerColors 0}}{{/index_of}}{{/compare}}" ng-if="!isHalf">
+                          <i class="fa"></i> {{ players.0.displayName }} ({{ players.0.avgStatistic }})
+                      </span>
+                    {{/if}}
+                </div>
+                {{/compare}}
+            </div>
+            <div class="color-container-footer game-players-container align-center">
+                <!-- PLAYER 2 BOX -->
+                {{#compare players.length 1 operator=">="}}
+                <div class="float-left {{#container_width players.length}}{{/container_width}}">
+                    {{#if isHalf}}
+                      <span ng-if="isHalf"
+                          class="split-scoreboard player-names {{#compare currentPlayer players.1.id operator="==="}}{{#index_of playerColors 8}}{{/index_of}}{{/compare}} {{#compare currentPlayer players.1.id operator="!=="}}{{#index_of playerColors 1}}{{/index_of}}{{/compare}}">
+                          <i class="fa"></i> {{ players.1.displayName }} ({{ players.1.avgStatistic }})
+
+                          <span class="{{#index_of playerColors 1}}{{/index_of}} split-scoreboard" ng-if="isHalf">
+                              {{ players.1.score }}<span ng-show="players.1.inPlayOff">({{ players.1.playOffScore }})</span>
+                          </span>
+                      </span>
+                    {{else}}
+                      <span class="player-names {{#compare currentPlayer players.1.id operator="==="}}{{#index_of playerColors 8}}{{/index_of}}{{/compare}} {{#compare currentPlayer players.1.id operator="!=="}}{{#index_of playerColors 1}}{{/index_of}}{{/compare}}" ng-if="!isHalf">
+                          <i class="fa"></i> {{ players.1.displayName }} ({{ players.1.avgStatistic }})
+                      </span>
+                    {{/if}}
+                </div>
+                {{/compare}}
             </div>
         </div>
 
