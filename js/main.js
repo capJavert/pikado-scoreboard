@@ -4,6 +4,9 @@ $(document).ready(function() {
 
   var source   = $("#pikado-scoreboard").html();
 
+var timer = 0; 
+var timeInterval = null;	
+
   Handlebars.registerHelper('color', function(ndx) {
     	if(typeof context === "undefined" || isNaN(ndx)){
     		return "";
@@ -211,6 +214,20 @@ $(document).ready(function() {
 
   var playerColors = ["btn-new-green", "btn-new-teal", "btn-new-navy", "btn-new-purple", "btn-new-yellow", "btn-new-pink", "btn-new-cyan", "btn-new-blue", "btn-new-transparent-grey"];
 
+	function setTimer(){
+		timeInterval = setInterval(function(){
+			console.log("TIMER_VALUE",timer);
+			if(timer === 0){
+				clearInterval(timeInterval);
+			}
+			else{
+				$('.active-score-timer').text(timer);
+				timer--;
+			}
+
+		},1000);
+	}
+
   socket.on('connect', function(){
       console.log('qqCLIENT_MONITOR');
   });
@@ -225,7 +242,10 @@ $(document).ready(function() {
 
   socket.on('gameMonitor:displayScore', function(data){
       console.log("displayScoreCLIENT");
-
+	if(data.timer == 45 && timer == 0){
+		timer = data.timer;
+		setTimer();
+	}
       data.playerColors = playerColors;
       $("#content").html(template(data));
   });
